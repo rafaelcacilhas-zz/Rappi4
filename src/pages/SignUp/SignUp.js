@@ -1,16 +1,23 @@
-import React from "react";
-import SignUpForm from "./SignUpForm";
+import React              from "react";
+import SignUpForm         from "./SignUpForm";
 
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { useContext}      from "react";
+import { GlobalContext }  from "../../contexts/GlobalContext";
 
-import logo from '../../components/img/logo.svg';
+import Box                from '@mui/material/Box';
+import Typography         from '@mui/material/Typography';
+
+import logo               from '../../components/img/logo.svg';
 import useUnprotectedPage from "../../hooks/useUnprotectedPage";
 
 
 
 const SignUp = () => {
   useUnprotectedPage()
+  
+  const { getListOfRestaurants } = useContext(GlobalContext);
+  getListOfRestaurants();
+
 
   return (
 

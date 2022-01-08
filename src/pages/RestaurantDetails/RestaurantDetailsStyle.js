@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import DropDownArrow from '../../img/DropDownArrow.png'
 
 export const RestaurantDetailsStyle = styled.div`
   display: flex;
@@ -227,9 +226,7 @@ export const ElementContainer = styled.div`
     border-bottom-left-radius: initial;
     border-top-right-radius: initial;
     z-index: 20;
-    :hover{
-      background-color: black;
-    }
+
   }
   div {
     width: 30%;

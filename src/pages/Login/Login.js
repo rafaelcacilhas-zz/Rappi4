@@ -1,20 +1,26 @@
-import React from "react";
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import React                from "react";
+import Box                  from '@mui/material/Box';
+import Button               from '@mui/material/Button';
+import Typography           from '@mui/material/Typography';
 
-import { goToSignUp } from "../../routes/coordinator";
-import { useHistory } from "react-router-dom";
+import { goToSignUp }       from "../../routes/coordinator";
+import { useHistory }       from "react-router-dom";
 
-import LoginForm from "./LoginForm";
-import logo from '../../components/img/logo.svg';
-import useUnprotectedPage from "../../hooks/useUnprotectedPage";
+import { useContext}        from "react";
+import { GlobalContext }    from "../../contexts/GlobalContext";
+
+import LoginForm            from "./LoginForm";
+import logo                 from '../../components/img/logo.svg';
+import useUnprotectedPage   from "../../hooks/useUnprotectedPage";
 
 
 
 const Login = () => {
   const history = useHistory();
   useUnprotectedPage()
+
+  const { getListOfRestaurants } = useContext(GlobalContext);
+  getListOfRestaurants();
 
   return (
 
@@ -25,7 +31,7 @@ const Login = () => {
         flexDirection: 'column',
         alignItems: 'center',
         bgcolor: 'primary.lighter',
-        width: '375px',
+        width: '100%',
         height: '100vh',
         m: '0'
       }}>
