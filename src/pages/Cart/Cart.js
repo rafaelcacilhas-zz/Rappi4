@@ -11,7 +11,8 @@ import RadioGroup       from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl      from '@mui/material/FormControl';
 
-import CardCarrinho     from '../../components/CardCarrinho';
+import CardContent      from '@mui/material/CardContent';
+import CardMedia        from '@mui/material/CardMedia';
 import Endereco         from '../../components/Endereco';
 import useProtectedPage from "../../hooks/useProtectedPage";
 
@@ -21,14 +22,126 @@ const Cart = () => {
 
 
 
-    const { carrinho, setCarrinho, userAddress,getFullAddress } = useContext(GlobalContext);
-
+    const { carrinho, userAddress,getFullAddress,frete } = useContext(GlobalContext);
     let temCarrinho 
     carrinho? temCarrinho = true : temCarrinho = false
 
+    let display = []
+
+    display = carrinho.map( (item) => (
+        <Box key = {item.id} sx={{ 
+        marginTop:      '8px',
+        marginBottom:   '8px',
+        display:        'flex', 
+        height:         '17vh', 
+        width:          '90vw', 
+        border:         '1px solid black',
+        borderRadius:   '8px',
+        borderColor:    'fundoCinza.contrastText',
+        }}>
+
+
+
+
+            <Box sx={{height: '17vh', width: '25vw'}} >
+                <CardMedia
+                    border-radius= '8px'
+                    component="img"
+                    image={item.photoUrl}
+                    alt="comida"
+                />
+            </Box>
+
+                <Box sx={{ 
+                    height: '17vh',
+                    width:  '65vw',
+                }}>
+
+                    <CardContent>
+
+                            <Box sx={{
+                                marginRight: '0px',
+                                display:'flex',
+                                width:'61vw', 
+                                justifyContent:'space-between',
+                            }}>
+
+                                <Typography gutterBottom variant="body1" component="div" color='primary.main'>
+                                    {item.name}
+                                </Typography>
+
+                                <Box sx={{
+                                    marginTop: '-17px',
+                                    width: '9vw',
+                                    height: '5vh',
+                                    border: '1px solid', 
+                                    borderRadius: '8px',
+                                    borderColor: 'primary.main',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                
+                                    }}> 
+
+                                    <Typography gutterBottom variant="body1" component="div" color='primary.main'>
+                                    {item.quantity}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            <Box>
+                                <Typography variant="body2" color="text.secondary">
+                                    {item.description}
+                                </Typography>   
+                            </Box>
+
+                            <Box sx={{display:'flex', width:'230px', justifyContent:'space-between'}}>
+
+                                    <Typography variant="body1" >
+                                        R${item.price},00
+                                    </Typography> 
+
+                                    
+                                    <Button variant = 'outlined' sx={{
+                                        marginTop:      '18px', 
+                                        marginRight:    '1px', 
+                                        borderRadius:   '8px', 
+                                        width:          '24vw', 
+                                        height:         '5vh'
+                                    }} > 
+
+                                        <Typography variant='body1'>
+                                            remover
+                                        </Typography>
+                                    </Button>                           
+                            </Box>
+
+                        </CardContent>
+
+
+                </Box>
+        </Box>
+
+    
+    
+    
+    
+    )    )
+
     useEffect(() => {
         getFullAddress()
-    }, [])
+    })
+    
+
+    const calculaTotal = () => {
+        let sub = 0
+
+        for(let i=0; i< carrinho.length;i++){
+            sub = sub + carrinho[i].quantity*carrinho[i].price 
+        }
+        return sub + frete
+    }
+    
     
     return (
 
@@ -93,7 +206,7 @@ const Cart = () => {
             }}>
 
                 {temCarrinho?             
-                (<Box> <Endereco /><CardCarrinho />  </Box> ):
+                (<Box> <Endereco /> {display}  </Box> ):
                 <Typography  color = "textPrimary" variant="body1"> 
                     Carrinho vazio 
                 </Typography>
@@ -118,10 +231,9 @@ const Cart = () => {
 
             }}>
                 <Typography  color = "textPrimary" variant="body1"> 
-                    Frete R$0,00
+                    Frete R${frete},00
                 </Typography>
             </Box>
-
 
             <Box
             sx={{
@@ -138,7 +250,7 @@ const Cart = () => {
 
                 <Box sx={{       marginRight: '8px'}}>                
                     <Typography  color = "primary" variant="body1"> 
-                        R$0,00 
+                        R${calculaTotal()},00 
                     </Typography>
                 </Box>
             </Box>

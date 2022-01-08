@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { GlobalContext } from "./GlobalContext";
-import useForm from "../hooks/useForm";
-import { BASE_URL } from "../constants/urls";
-import axios from "axios";
-import { useHistory } from "react-router";
-import { goToProfile, goToHome } from "../routes/coordinator";
+import React, { useState }        from "react";
+import { GlobalContext }          from "./GlobalContext";
+import useForm                    from "../hooks/useForm";
+import { BASE_URL }               from "../constants/urls";
+import axios                      from "axios";
+import { useHistory }             from "react-router";
+import { goToProfile, goToHome }  from "../routes/coordinator";
 
 const GlobalState = (props) => {
   const [form, onChange, clear] = useForm({
@@ -25,8 +25,17 @@ const GlobalState = (props) => {
   const [ordersHistory, setOrdersHistory] = useState([]);
   const token = localStorage.getItem("token");
   const history = useHistory();
-  const [carrinho, setCarrinho] = useState();
-  const [choosedItem, setChoosedItem] = useState(false);
+  const [carrinho, setCarrinho] = useState([]);
+  const [frete,setFrete] = useState(0);
+
+  const [foundRestaurants, setFoundRestaurants]     = useState();
+  const [choosedCategory, setChoosedCategory]       = useState("");
+  const [serachInputOnFocus, setSerachInputOnFocus] = useState(false);
+  const [id, setId]                                 = useState("1");
+  const [choosedRestaurant, setChoosedRestaurant]   = useState([]);
+  const [newArray, setNewArray]                     = useState();
+  const [category, setCategory]                     = useState();
+
   // Requisição para pegar alterar o perfil:
 
   const updateProfile = () => {
@@ -62,9 +71,9 @@ const GlobalState = (props) => {
     console.log(`FOOOOOOOOOI`);
   };
 
-  // Requisição para pegar histórico de ordens:
 
   const getOrdersHistory = () => {
+
     axios
       .get(`${BASE_URL}/orders/history`, {
         headers: {
@@ -72,7 +81,6 @@ const GlobalState = (props) => {
         },
       })
       .then((response) => {
-        // console.log(`DEU CERTO o getOrdersHistory:`)
         setOrdersHistory(response.data.orders);
       })
       .catch((error) => {
@@ -80,31 +88,38 @@ const GlobalState = (props) => {
       });
   };
 
-  const [foundRestaurants, setFoundRestaurants] = useState([]);
 
-  const [choosedCategory, setChoosedCategory] = useState("");
-  const [serachInputOnFocus, setSerachInputOnFocus] = useState(false);
-  const [id, setId] = useState("1");
-  const [choosedRestaurant, setChoosedRestaurant] = useState([]);
-  const [newArray, setNewArray] = useState();
-  const [category, setCategory] = useState();
+  const getListOfRestaurants = (foundRestaurants) => {
 
-  const getListOfRestaurants = () => {
-    axios
-      .get(`${BASE_URL}/restaurants`, {
-        headers: {
-          auth: localStorage.getItem("token"),
-          "Content-type": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log(`23`, response);
-        setFoundRestaurants(response.data.restaurants);
-        console.log(foundRestaurants);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if(foundRestaurants){
+      return foundRestaurants
+    }
+
+
+
+    try{
+      axios
+        .get(`${BASE_URL}/restaurants`, {
+          headers: {
+            auth: localStorage.getItem("token"),
+            "Content-type": "application/json",
+          },
+        })
+        .then(  (response) => {
+          setFoundRestaurants(response.data.restaurants);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    catch(error){
+      console.log(error)
+    }
+
+
+    
+
+
   };
 
   // Requisição para pegar os dados do usuário:
@@ -117,7 +132,6 @@ const GlobalState = (props) => {
         },
       })
       .then((response) => {
-        // console.log(`DEU CERTO o getProfile:`)
         setUserInfos({
           id: response.data.user.id,
           name: response.data.user.name,
@@ -209,17 +223,6 @@ const GlobalState = (props) => {
         setCarrinho,
         updateProfile,
         clear,
-        onSendAddressForm,
-        onChange,
-        form,
-        userInfos,
-        setUserInfos,
-        getFullAddress,
-        getProfile,
-        userAddress,
-        getOrdersHistory,
-        ordersHistory,
-        onSendUpdateProfileForm,
         foundRestaurants,
         setFoundRestaurants,
         choosedCategory,
@@ -235,10 +238,8 @@ const GlobalState = (props) => {
         setNewArray,
         category,
         setCategory,
-        carrinho,
-        setCarrinho,
-        choosedItem,
-        setChoosedItem,
+        frete,
+        setFrete
       }}
     >
       {props.children}

@@ -20,7 +20,7 @@ const Profile = () => {
     getFullAddress()
     getProfile()
     getOrdersHistory()
-  }, [])
+  })
 
   const convertDate = (timestamp) => {
     let time = new Date(timestamp)

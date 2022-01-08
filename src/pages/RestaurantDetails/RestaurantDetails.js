@@ -1,103 +1,166 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import {
   RestaurantDetailsStyle,
   RestauranteContainer,
   ElementContainer,
 } from "./RestaurantDetailsStyle";
-import Header from "../../components/Header/Header";
-import useProtectedPage from "../../hooks/useProtectedPage"
-import { GlobalContext } from "../../contexts/GlobalContext";
-import { useParams } from "react-router";
-import DropDownArrow from '../../img/DropDownArrow.png'
-import zIndex from "@mui/material/styles/zIndex";
+
+import Header             from "../../components/Header/Header";
+import useProtectedPage   from "../../hooks/useProtectedPage"
+import { GlobalContext }  from "../../contexts/GlobalContext";
+import {useParams}        from "react-router-dom";
+
+import Box                from "@mui/material/Box";
+import Button             from '@mui/material/Button';
+
+
+
+
 
 
 
 const RestaurantDetails = () => {
-  const {id, setId,choosedRestaurant, setChoosedRestaurant, newArray, setNewArray, category, setCategory, quantity, setQuantity, carrinho, setCarrinho, choosedItem, 
-    setChoosedItem } = useContext(GlobalContext)
+  let pathParams  = useParams();
+  let  id         = pathParams.id;
+
+
+
+  const {choosedRestaurant, setChoosedRestaurant, newArray, setNewArray, category, setCategory, quantity, carrinho, setCarrinho,  
+setFrete} = useContext(GlobalContext);
+
 
   useProtectedPage()
-  const pathParams = useParams()
 
-  const addItensToCart = (item) =>{
-    const hasTheItem = carrinho ? carrinho.filter((itemDoCarrinho, index) =>{
-      if(item.id === itemDoCarrinho.id){
-        return index
-      } 
-    }) : null
 
-    if(hasTheItem !== [] || hasTheItem !== null){
-      setCarrinho(carrinho[hasTheItem].quantity + 1)
-    }else{
-      carrinho.push({...item, restaurantId: pathParams.id})
-    }
-    console.log(carrinho, 'esse carrinho')
+
+
+  const addItensToCart = (item, entrega) =>{
+
+    let temItem = false
+    let itemIndex 
+    let temp
+    setFrete(entrega)
+
+
+    if(carrinho.length === 0) {
+
+  
+  
+      if(temItem === false ){
+        carrinho.push({...item,   restaurantId: pathParams.id, quantity: 1})
+      }
+
+    } 
+    
+    else if(carrinho.length > 0) {
+
+        for (let i = 0; i < carrinho.length ; i++) {
+
+          if(carrinho[i].id === item.id){
+            temItem = true
+            itemIndex = i
+          }
+
+        }
+
+      if(temItem === true) {
+        temp = carrinho
+        temp[itemIndex].quantity = temp[itemIndex].quantity + 1
+        setCarrinho( temp )
+      }
+
+      if(temItem === false) {
+        carrinho.push({...item, restaurantId: pathParams.id, quantity: 1})
+      }
+
+
+
+      console.log('deu')
+
+
   }
+    
+
+
+
+
+  
+  
+  }
+
+  const renderCategorys = () => {
+    if(category !== false) {
+    return category.map((categoryName) => {
+      return (
+
+        <Box sx={{width: '90vw'}}>
+          <h2>{categoryName}</h2>
+
+
+          {newArray? 
+          newArray[categoryName].map((item) => {
+            return (
+              <ElementContainer key={ `${item.id}${categoryName}`  }>
+
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-around',
+                  height: '15vh',
+                  minWidth: '100%',
+                }}>
+
+                  <Box>
+                    <img alt="Comida" src={item.photoUrl} />
+                  </Box>
+
+
+                  <Box>
+                    <h3>{item.name}</h3>
+                    <p>{item.description}</p>
+                    <p>R$ {handlePrice(item.price)}</p>
+                  </Box>
+
+
+                  <Box >
+                    {item.quantity ? (
+                      <span> {quantity} </span>
+                    ) : (
+                      <span style={{ display: "none" }}></span>
+                    )}
+                    {quantity ? (
+                      <span style={{ borderColor: "red", color: "red" }}>
+                        <Button size ='small'> remover </Button>
+                      </span>
+                    ) : (
+                      <span>
+                        <Button onClick={() => addItensToCart(item, choosedRestaurant[0].shipping)  } size ='small'> adicionar </Button>
+                      </span>
+                    )}
+                  </Box>
+
+                </Box>
+
+              </ElementContainer>
+            );
+          }) : 'carregando'}
+        </Box>
+
+      );
+    });
+  }
+  };
 
   const handlePrice = (number) =>{
     return number.toFixed(2).replace('.', ',')
   }
 
-  const renderOptions = () => {
-    const arrayOfOptions = []
-    for(let i = 0; i !== 11; i++) {
-      arrayOfOptions.push(i);
-    }
-    return arrayOfOptions.map((option) =>{
-      return (
-        <option>
-          {option}
-        </option>
-      )
-    })
-  };
-
-  const renderCategorys = () => {
-    return category.map((categoryName) => {
-      return (
-        <>
-          <h2>{categoryName}</h2>
-          {newArray[categoryName].map((item) => {
-            return (
-              <ElementContainer key={item.id}>
-                <div>
-                  <img alt="Food" src={item.photoUrl} />
-                </div>
-                <div>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                  <p>R$ {handlePrice(item.price)}</p>
-                </div>
-                <div>
-                  {item.quantity ? (
-                    <span> {quantity} </span>
-                  ) : (
-                    <span style={{ display: "none" }}></span>
-                  )}
-                  {quantity ? (
-                    <span style={{ borderColor: "red", color: "red" }}>
-                      remover
-                    </span>
-                  ) : (
-                    <span 
-                    onclick={(event) => {event.stopPropagation(); console.log('click');setChoosedItem(item)}}
-                    style={{zIndex: '20'}}
-                    >adicionar</span>
-                  )}
-                </div>
-              </ElementContainer>
-            );
-          })}
-        </>
-      );
-    });
-  };
 
   const getDetails = async () => {
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImpDT0lCZUhySDVsUXZrTEZPRHVEIiwibmFtZSI6IkFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJjcGYiOiIxMTIuMTExLjExMS0xMSIsImhhc0FkZHJlc3MiOnRydWUsImFkZHJlc3MiOiJCb25pdGEsIDEyMywgQmxvY28gMSAtIEJvbml0byIsImlhdCI6MTYzNTg3MzAwOH0.LFXJGCj6nFxn5Pz9cI-kYWupxRNQaQKCHeR554m8Uuc";
+
+    const token = localStorage.getItem("token");
 
     try {
       const response = await axios.get(
@@ -109,8 +172,10 @@ const RestaurantDetails = () => {
           },
         }
       );
+
       setChoosedRestaurant([response.data.restaurant]);
       var newArray = [];
+
       for (let i = 0; i < response.data.restaurant.products.length; i++) {
         let category = response.data.restaurant.products[i].category;
         if (!newArray[category]) {
@@ -122,20 +187,23 @@ const RestaurantDetails = () => {
       let categorys = Object.keys(newArray);
       setCategory(categorys);
     } catch (error) {
-      alert("error:", error);
+      console.log("error:", error);
     }
   };
 
   useEffect(() => {
     getDetails();
-  }, []);
+  },);
+
+
+
 
   return (
     <RestaurantDetailsStyle>
       <Header />
       {choosedRestaurant && newArray && category ? (
         <RestauranteContainer>
-          <img alt="food" src={choosedRestaurant[0].logoUrl} />
+          <img alt="logo do restaurante escolhido" src={choosedRestaurant[0].logoUrl} />
           <h3>{choosedRestaurant[0].name}</h3>
           <p>{choosedRestaurant[0].category}</p>
           <div>
@@ -145,25 +213,21 @@ const RestaurantDetails = () => {
           <p>{choosedRestaurant[0].address}</p>
         </RestauranteContainer>
       ) : (
-        <h1>Loading...</h1>
+        <h1>Carregando...</h1>
       )}
-      {choosedRestaurant && newArray && category ? renderCategorys() : null}
-      {console.log("render")}
-      {choosedItem ? (
-                    <aside id="popup">
-        <div>
-        <p>Selecione a quantidade desejada</p>
-        <select >
-          <img src={DropDownArrow}/>
-          {renderOptions()}
-        </select>
-        <button onclick={() => addItensToCart()}>ADICIONAR AO CARRINHO</button>
-        </div>
-      </aside>
-      ) : ('')} 
-      
-    </RestaurantDetailsStyle>
-  );
-};
 
-export default RestaurantDetails;
+      {choosedRestaurant && newArray && category ? 
+      renderCategorys() : null}
+
+
+      
+    <Box sx={{height: '10vh'}} >
+    </Box>
+    </RestaurantDetailsStyle>
+
+  )
+}
+
+export default RestaurantDetails
+
+

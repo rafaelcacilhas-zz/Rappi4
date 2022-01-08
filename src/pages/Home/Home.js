@@ -1,26 +1,32 @@
-import React, { useState, useEffect, useContext } from "react";
-import { GlobalContext } from "../../contexts/GlobalContext";
-import Header from "../../components/Header/Header";
 import {
   SearchContainerStyle,
   RestauranteContainer,
   CategroysStyle,
-  SearchWrapper,
-} from "./HomeStyle";
-// import { useHistory, useParams } from "react-router-dom";
-import useProtectedPage from "../../hooks/useProtectedPage";
+}                         from "./HomeStyle";
 
-import Box        from "@mui/material/Box";
-import SearchIcon from "@mui/icons-material/Search";
-import Typography from '@mui/material/Typography';
-import TextField  from "@mui/material/TextField";
+import React              from "react";
+import { useEffect}       from "react";
+import { useContext}      from "react";
+import { useHistory}      from "react-router-dom";
+
+
+import { GlobalContext }  from "../../contexts/GlobalContext";
+import Header             from "../../components/Header/Header";
+import {goToDetails}      from '../../routes/coordinator';
+import useProtectedPage   from "../../hooks/useProtectedPage";
+
+import Box                from "@mui/material/Box";
+import SearchIcon         from "@mui/icons-material/Search";
+import Typography         from '@mui/material/Typography';
+import TextField          from "@mui/material/TextField";
+import Button             from '@mui/material/Button';
 
 
 const Home = () => {
   useProtectedPage();
 
-  // const history = useHistory();
-  /* const pathParams = useParams();*/
+  const history = useHistory();
+
 
   const {
     form,
@@ -29,45 +35,36 @@ const Home = () => {
     choosedCategory,
     setChoosedCategory,
     foundRestaurants,
-    setFoundRestaurants,
     serachInputOnFocus,
     setSerachInputOnFocus,
   } = useContext(GlobalContext);
-  // const history = useHistory();
-  /* const pathParams = useParams();*/
+
 
   useEffect(() => {
-    getListOfRestaurants();
-  }, []);
-
-  // const [choosenRestaurant, setChoosenRestaurant] = useState([])
-
-  // const goToDetails = (restaurant) => {
-  //     setChoosenRestaurant()
-  //     history.push()
-  // }
-
-  // const handlePrice = (number) =>{
-  //   return number.replace('.', ',').toFixed(2)
-  // }
+    getListOfRestaurants(foundRestaurants);
+  });
 
   const handlePrice = (number) => {
     return number.toFixed(2).replace(".", ",");
   };
 
-  const renderCategorys = () => {
-    const objectOfCategorys = [];
-    foundRestaurants.map((restaurant) => {
-      if (!objectOfCategorys[restaurant.category]) {
-        objectOfCategorys[restaurant.category] = [];
-        objectOfCategorys[restaurant.category].push(restaurant.category);
-      }
-    });
+  const renderCategories = () => {
 
-    let newArray = Object.keys(objectOfCategorys);
+    let objectOfCategories = [];
+
+    for (let i = 0; i < foundRestaurants.length; i++){
+      if (!objectOfCategories[foundRestaurants[i].category]) {
+        objectOfCategories[foundRestaurants[i].category] = [];
+        objectOfCategories[foundRestaurants[i].category].push(foundRestaurants[i].category);
+      }
+    }
+
+
+    let newArray = Object.keys(objectOfCategories);
     return newArray.map((category) => {
       return (
         <Typography
+          key={category}
           onClick={(event) => {
             event.stopPropagation();
             handleChooseCategory(category);
@@ -77,6 +74,7 @@ const Home = () => {
         </Typography>
       );
     });
+
   };
 
   const handleChooseCategory = (category) => {
@@ -87,134 +85,138 @@ const Home = () => {
       setChoosedCategory("");
     }
 
-    return (
-      <>
-        <SearchContainerStyle>
-          <Header title="Busca" />
-          <input
-            type="text"
-            name="searchInput"
-            value={form.searchInput}
-            title="Insert the name of a restaurant"
-            onChange={() => onChange()}
-            placeholder="Restaurants"
-            required
-          />
-          {foundRestaurants.length ? (
-            restaurants.length > 0 ? (
-              restaurants
-            ) : (
-              <Typography color="textPrimary" variant="body1"> 
-                Nada foi encontrado :(
-              </Typography>
-            )
-          ) : (
-            <Typography color="textPrimary" variant="body1"> 
-              Digite o nome do restaurante! 
-            </Typography>
-            )}
-          {console.log("render")}
-        </SearchContainerStyle>
-      </>
-    );
   };
 
-  const restaurants = foundRestaurants
-    .filter((restaurant) => {
-      return restaurant.name
-        .toLowerCase()
-        .includes(form.searchInput.toLowerCase());
-    })
-    .filter((restaurant) => {
-      // console.log(form.searchInput)
-      if (
-        restaurant.category === choosedCategory ||
-        !choosedCategory ||
-        form.searchInput
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    })
-    .map((restaurant) => {
-      return (
+  const renderMain = () => {
 
-        <RestauranteContainer
-          // onClick={goToDetails()}
-          key={restaurant.id}
-        >
-          <img alt="Restaurant" src={restaurant.logoUrl} />
-          <h3>{restaurant.name}</h3>
-          <div>
-            <p>{restaurant.deliveryTime} min</p>
-            <p>Frete R$ {handlePrice(restaurant.shipping)}</p>
-          </div>
-        </RestauranteContainer>
-      );
-    });
-  
-  return (
-    <>
+    let restaurants =  foundRestaurants
+      .filter( (restaurant) => {
+        return restaurant.name
+          .toLowerCase()
+          .includes(form.searchInput.toLowerCase());
+      })
+      .filter(  (restaurant) => {
+        if (
+          restaurant.category === choosedCategory ||
+          !choosedCategory ||
+          form.searchInput
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .map((restaurant) => {
+        return (    
+          <RestauranteContainer
+            key={restaurant.id}
+          >
+
+            <img alt="Restaurant" src={restaurant.logoUrl} />
+            <Box sx={{ width: '90%'}} >
+              <Button  style={{minWidth: '80vw', }} size = 'small' variant="text" onClick={() => { goToDetails(history, restaurant.id) }} > 
+                <h3>{restaurant.name}</h3> 
+              </Button>
+            </Box>
+
+
+
+            <div>
+              <p>{restaurant.deliveryTime} min</p>
+              <p>Frete R$ {handlePrice(restaurant.shipping)}</p>
+            </div>
+          </RestauranteContainer>
+        );
+      })
+
+    return(
       <SearchContainerStyle
-        onClick={() => {
-          console.log(foundRestaurants);
-          setSerachInputOnFocus(false);
-        }}
-      >
-        <Header />
-
-        <Box
-        sx={{
-          display:        "flex",
-          flexDirection:  "column",
-          marginTop:      '2vh',
-          marginBottom:   '2vh',
-        }}
-        >
-
-          <TextField
-          label="Restaurantes"
-          type="text"
-          variant="outlined"
-          name={"searchInput"}
-          placeholder={'Busca'}
-          value={form.searchInput}
-          onChange={(event) => {
-              setSerachInputOnFocus(!false);
-              onChange(event);
+            onClick={() => {
+              setSerachInputOnFocus(false);
             }}
-            onClick={(event) => {
-              event.stopPropagation();
-              setSerachInputOnFocus(true);
-            }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon /> 
-              ),
-            }}
-          />
+          >
 
-        </Box>
+            <Header />
 
-        <CategroysStyle>
-          {foundRestaurants ? renderCategorys() : null}
-        </CategroysStyle>
+            <Box
+              sx={{
+                display:        "flex",
+                flexDirection:  "column",
+                marginTop:      '2vh',
+                marginBottom:   '2vh',
+              }}
+              >
 
-        {serachInputOnFocus && !form.searchInput ? (
-            <Typography color="primary.main" variant="body1"> 
-              Digite o nome do restaurante! 
-            </Typography>        ) : restaurants.length > 0 ? (
-          restaurants
-        ) : (
-          <Typography color="primary.main" variant="body1"> 
-            Nenhum restaurante encontrado :(
-          </Typography>
-        )}
-        {console.log("render")}
+
+              <TextField
+                label="Busca"
+                type="text"
+                variant="outlined"
+                name={"searchInput"}
+                placeholder={'Busca'}
+                value={form.searchInput}
+                onChange={(event) => {
+                    setSerachInputOnFocus(!false);
+                    onChange(event);
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setSerachInputOnFocus(true);
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <SearchIcon /> 
+                    ),
+                  }}
+              />
+
+
+            </Box>
+
+
+            <CategroysStyle>
+              {renderCategories()}
+            </CategroysStyle>
+
+            {serachInputOnFocus && !form.searchInput ? (
+                  <Typography color="primary.main" variant="body1"> 
+                    Digite o nome do restaurante! 
+                  </Typography>        ) : restaurants.length > 0 ? (
+                restaurants
+              ) : (
+                <Typography color="primary.main" variant="body1"> 
+                  Carregando...
+                </Typography>
+            )}
+
+          <Box sx={{height: '10vh'}} ></Box>
+
       </SearchContainerStyle>
-    </>
+    )
+
+  }
+
+  return ( 
+  
+    <Box>
+      
+      {foundRestaurants? 
+        (
+          <Box>  
+            { renderMain()  } 
+          </Box>
+
+        )
+        :
+        ( 
+            <h1>
+              carregando
+            </h1> 
+        )}
+
+    </Box>
   );
 };
 
 export default Home;
+

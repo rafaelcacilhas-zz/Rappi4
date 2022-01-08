@@ -16,6 +16,7 @@ import SplashScreen from "../../img/SplashScreen.png"
 
 
 const LoginForm = () => {
+
   const [loading, setLoading] = useState(true);
 
   useLayoutEffect(() => {
@@ -26,20 +27,20 @@ const LoginForm = () => {
         goToHome(history);
       }
     }, 1200);
-  }, []);
+  });
 
-  const history = useHistory();
-  const [isLoading, setIsLoading] = useState(false);
-  const [form, onChange, clear] = useForm({ email: "", password: "" });
-  const [values, setValues] = React.useState({
+  const history                     = useHistory();
+  const [isLoading, setIsLoading]   = useState(false);
+  const [form, onChange, clear]     = useForm({ email: "", password: "" });
+  const [values, setValues]         = React.useState({
     password: "",
     showPassword: false,
   });
 
   const onSubmitForm = (event) => {
     event.preventDefault();
+    console.log(form)
     loginData(form, clear, history, setIsLoading);
-    console.log(form);
   };
 
   const handleClickShowPassword = () => {

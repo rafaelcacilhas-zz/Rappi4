@@ -1,13 +1,13 @@
-import React, { useContext, useState } from "react"
-import { GlobalContext } from "../../contexts/GlobalContext";
-import { Body } from './styled';
-import { useHistory } from "react-router-dom"
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import useProtectedPage from "../../hooks/useProtectedPage"
-import Header from "../../components/Header/Header";
-import { CircularProgress } from '@mui/material';
+import React, { useContext }    from "react"
+import { GlobalContext }        from "../../contexts/GlobalContext";
+import { Body }                 from './styled';
+import { useHistory }           from "react-router-dom"
+import Button                   from '@mui/material/Button'
+import TextField                from '@mui/material/TextField';
+import InputAdornment           from '@mui/material/InputAdornment';
+import useProtectedPage         from "../../hooks/useProtectedPage"
+import Header                   from "../../components/Header/Header";
+import { CircularProgress }     from '@mui/material';
 
 
 const Address = () => {

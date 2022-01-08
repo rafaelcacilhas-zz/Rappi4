@@ -1,18 +1,17 @@
-import useProtectedPage from "../../hooks/useProtectedPage"
-import { ProfileBox, Body } from "./styled"
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import React, { useContext } from "react"
-import { GlobalContext } from "../../contexts/GlobalContext";
-import { useHistory } from "react-router"
-import Header from "../../components/Header/Header"
-import { CircularProgress } from '@mui/material';
-import { goToProfile } from "../../routes/coordinator"
+import useProtectedPage         from "../../hooks/useProtectedPage"
+import { Body }                 from "./styled"
+import Button                   from '@mui/material/Button'
+import TextField                from '@mui/material/TextField';
+import InputAdornment           from '@mui/material/InputAdornment';
+import React, { useContext }    from "react"
+import { GlobalContext }        from "../../contexts/GlobalContext";
+import { useHistory }           from "react-router"
+import Header                   from "../../components/Header/Header"
+import { CircularProgress }     from '@mui/material';
 
 const ChangeProfile = () => {
     useProtectedPage()
-    const { form, onChange, clear, isLoading, updateProfile, setIsLoading, onSendUpdateProfileForm } = useContext(GlobalContext);
+    const { form, onChange, isLoading,onSendUpdateProfileForm } = useContext(GlobalContext);
     const history = useHistory()
 
 

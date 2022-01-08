@@ -21,20 +21,22 @@ export const signUpData = (body, clear, history, setIsLoading) => {
 
 export const loginData = (body, clear, history, setIsLoading) => {
   setIsLoading(true)
-  axios
-    .post(`${BASE_URL}/login`, body)
+
+  axios.post(`${BASE_URL}/login`, body)
     .then((res) => {
-      if (res.data.user.hasAddress) {
-        goToHome(history)
-      } else {
-        goToAddress(history);
-      }
-      localStorage.setItem("token", res.data.token);
-      clear();
-      setIsLoading(false)
-    })
+        if (res.data.user.hasAddress) {
+          goToHome(history)
+        } else {
+          goToAddress(history);
+        }
+        localStorage.setItem("token", res.data.token);
+        clear();
+        setIsLoading(false)
+      })
     .catch((err) => {
-      console.log(err);
-      setIsLoading(false)
-    });
+        console.log(err);
+        setIsLoading(false)
+      });
+
+
 };
